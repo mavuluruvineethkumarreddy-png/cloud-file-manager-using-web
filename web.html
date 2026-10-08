@@ -1,0 +1,2371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CloudVault - Cloud File Management System</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    background:#f4f7fb;
+    color:#172033;
+    transition:.3s;
+}
+
+body.dark{
+    background:#0f172a;
+    color:#f8fafc;
+}
+
+button{
+    border:0;
+    cursor:pointer;
+}
+
+.hidden{
+    display:none!important;
+}
+
+/* ================= AUTH ================= */
+
+.auth{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:linear-gradient(135deg,#2563eb,#06b6d4);
+}
+
+.auth-box{
+    width:400px;
+    max-width:92%;
+    background:white;
+    padding:35px;
+    border-radius:20px;
+    box-shadow:0 20px 50px rgba(0,0,0,.3);
+}
+
+.auth-box h1{
+    text-align:center;
+    color:#2563eb;
+    margin-bottom:8px;
+}
+
+.auth-box p{
+    text-align:center;
+    color:#64748b;
+    margin-bottom:25px;
+}
+
+.input-group{
+    margin-bottom:15px;
+}
+
+.input-group label{
+    display:block;
+    margin-bottom:6px;
+    font-weight:bold;
+}
+
+.input-group input{
+    width:100%;
+    padding:12px;
+    border:1px solid #cbd5e1;
+    border-radius:8px;
+    outline:none;
+}
+
+.password-box{
+    position:relative;
+}
+
+.password-box button{
+    position:absolute;
+    right:8px;
+    top:7px;
+    background:transparent;
+    font-size:18px;
+}
+
+.primary-btn{
+    width:100%;
+    padding:13px;
+    background:#2563eb;
+    color:white;
+    border-radius:8px;
+    font-weight:bold;
+}
+
+.auth-switch{
+    text-align:center;
+    color:#2563eb;
+    margin-top:18px;
+    cursor:pointer;
+}
+
+/* ================= NAVBAR ================= */
+
+.navbar{
+    height:65px;
+    background:white;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:0 22px;
+    box-shadow:0 2px 10px rgba(0,0,0,.08);
+    position:sticky;
+    top:0;
+    z-index:100;
+}
+
+.dark .navbar{
+    background:#1e293b;
+}
+
+.logo{
+    color:#2563eb;
+    font-size:22px;
+    font-weight:bold;
+}
+
+.nav-right{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.icon-btn{
+    padding:10px;
+    border-radius:8px;
+    background:#e0e7ff;
+}
+
+.logout{
+    padding:10px 15px;
+    border-radius:8px;
+    background:#ef4444;
+    color:white;
+}
+
+/* ================= SIDEBAR ================= */
+
+.layout{
+    display:flex;
+}
+
+.sidebar{
+    width:230px;
+    min-height:calc(100vh - 65px);
+    position:fixed;
+    top:65px;
+    left:0;
+    background:#172554;
+    color:white;
+    padding:18px 12px;
+}
+
+.sidebar button{
+    width:100%;
+    padding:13px;
+    margin-bottom:5px;
+    background:transparent;
+    color:white;
+    text-align:left;
+    border-radius:8px;
+}
+
+.sidebar button:hover,
+.sidebar button.active{
+    background:#2563eb;
+}
+
+.main{
+    margin-left:230px;
+    width:calc(100% - 230px);
+    padding:25px;
+}
+
+.page-title{
+    margin-bottom:20px;
+}
+
+.page-title h2{
+    font-size:28px;
+}
+
+.page-title p{
+    color:#64748b;
+    margin-top:5px;
+}
+
+/* ================= CARDS ================= */
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:16px;
+    margin-bottom:20px;
+}
+
+.stat{
+    background:white;
+    padding:20px;
+    border-radius:15px;
+    box-shadow:0 4px 15px rgba(0,0,0,.06);
+}
+
+.dark .stat,
+.dark .card,
+.dark .file-card{
+    background:#1e293b;
+}
+
+.stat h4{
+    color:#64748b;
+}
+
+.stat strong{
+    display:block;
+    margin-top:8px;
+    font-size:29px;
+    color:#2563eb;
+}
+
+.card{
+    background:white;
+    padding:20px;
+    border-radius:15px;
+    box-shadow:0 4px 15px rgba(0,0,0,.06);
+    margin-bottom:20px;
+}
+
+/* ================= FILES ================= */
+
+.toolbar{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:20px;
+}
+
+.toolbar input,
+.toolbar select{
+    padding:11px;
+    border:1px solid #cbd5e1;
+    border-radius:8px;
+}
+
+.toolbar input{
+    flex:1;
+    min-width:200px;
+}
+
+.btn{
+    padding:11px 15px;
+    border-radius:8px;
+    color:white;
+    background:#2563eb;
+}
+
+.green{
+    background:#16a34a;
+}
+
+.red{
+    background:#ef4444;
+}
+
+.gray{
+    background:#64748b;
+}
+
+.file-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:18px;
+}
+
+.file-card{
+    background:white;
+    padding:18px;
+    border-radius:14px;
+    box-shadow:0 4px 15px rgba(0,0,0,.06);
+}
+
+.file-icon{
+    height:100px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:55px;
+    background:#eff6ff;
+    border-radius:10px;
+    margin-bottom:12px;
+}
+
+.file-card h3{
+    font-size:16px;
+    margin-bottom:7px;
+    word-break:break-word;
+}
+
+.file-card p{
+    color:#64748b;
+    font-size:13px;
+    margin-bottom:6px;
+}
+
+.file-actions{
+    display:flex;
+    gap:6px;
+    flex-wrap:wrap;
+    margin-top:12px;
+}
+
+.small-btn{
+    padding:7px 9px;
+    border-radius:6px;
+    color:white;
+    background:#2563eb;
+}
+
+/* ================= STORAGE ================= */
+
+.progress{
+    height:20px;
+    background:#e2e8f0;
+    border-radius:20px;
+    overflow:hidden;
+}
+
+.progress-bar{
+    height:100%;
+    background:#2563eb;
+    width:0;
+    transition:.5s;
+}
+
+/* ================= TABLE ================= */
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th,td{
+    padding:12px;
+    border-bottom:1px solid #e2e8f0;
+    text-align:left;
+}
+
+th{
+    background:#eff6ff;
+}
+
+/* ================= PROFILE ================= */
+
+.profile{
+    display:flex;
+    align-items:center;
+    gap:20px;
+}
+
+.avatar{
+    width:90px;
+    height:90px;
+    border-radius:50%;
+    background:#2563eb;
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:35px;
+}
+
+/* ================= NOTIFICATIONS ================= */
+
+.notification{
+    padding:14px;
+    border-left:4px solid #2563eb;
+    background:#eff6ff;
+    border-radius:6px;
+    margin-bottom:10px;
+}
+
+/* ================= MODAL ================= */
+
+.modal{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.6);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:500;
+}
+
+.modal-box{
+    background:white;
+    width:500px;
+    max-width:92%;
+    padding:25px;
+    border-radius:15px;
+}
+
+.dark .modal-box{
+    background:#1e293b;
+}
+
+.close{
+    float:right;
+    background:transparent;
+    font-size:22px;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:1000px){
+
+    .stats{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .file-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+}
+
+@media(max-width:650px){
+
+    .sidebar{
+        display:none;
+    }
+
+    .main{
+        margin-left:0;
+        width:100%;
+        padding:15px;
+    }
+
+    .stats{
+        grid-template-columns:1fr;
+    }
+
+    .file-grid{
+        grid-template-columns:1fr;
+    }
+
+    #welcomeUser{
+        display:none;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ================= AUTH ================= -->
+
+<div id="auth" class="auth">
+
+<div class="auth-box">
+
+<h1>☁️ CloudVault</h1>
+
+<p id="authText">
+Secure Cloud File Management
+</p>
+
+<!-- LOGIN -->
+
+<div id="loginForm">
+
+<div class="input-group">
+<label>Email</label>
+<input id="loginEmail" type="email"
+placeholder="Enter email">
+</div>
+
+<div class="input-group">
+
+<label>Password</label>
+
+<div class="password-box">
+
+<input id="loginPassword"
+type="password"
+placeholder="Enter password">
+
+<button onclick="togglePassword('loginPassword')">
+👁️
+</button>
+
+</div>
+
+</div>
+
+<button class="primary-btn"
+onclick="login()">
+Login
+</button>
+
+<div class="auth-switch"
+onclick="showSignup()">
+Create a new account
+</div>
+
+</div>
+
+
+<!-- SIGNUP -->
+
+<div id="signupForm" class="hidden">
+
+<div class="input-group">
+<label>Full Name</label>
+<input id="signupName"
+placeholder="Enter name">
+</div>
+
+<div class="input-group">
+<label>Email</label>
+<input id="signupEmail"
+type="email"
+placeholder="Enter email">
+</div>
+
+<div class="input-group">
+
+<label>Password</label>
+
+<div class="password-box">
+
+<input id="signupPassword"
+type="password"
+placeholder="Create password">
+
+<button onclick="togglePassword('signupPassword')">
+👁️
+</button>
+
+</div>
+
+</div>
+
+<button class="primary-btn"
+onclick="signup()">
+Create Account
+</button>
+
+<div class="auth-switch"
+onclick="showLogin()">
+Already have an account? Login
+</div>
+
+</div>
+
+</div>
+</div>
+
+
+<!-- ================= APP ================= -->
+
+<div id="app" class="hidden">
+
+<nav class="navbar">
+
+<div class="logo">
+☁️ CloudVault
+</div>
+
+<div class="nav-right">
+
+<button class="icon-btn"
+onclick="toggleDark()">
+🌙
+</button>
+
+<button class="icon-btn"
+onclick="showPage('notifications')">
+🔔
+</button>
+
+<span id="welcomeUser"></span>
+
+<button class="logout"
+onclick="logout()">
+Logout
+</button>
+
+</div>
+
+</nav>
+
+
+<div class="layout">
+
+<aside class="sidebar">
+
+<button class="active"
+onclick="showPage('dashboard',this)">
+📊 Dashboard
+</button>
+
+<button onclick="showPage('files',this)">
+📁 My Files
+</button>
+
+<button onclick="showPage('favorites',this)">
+⭐ Favorites
+</button>
+
+<button onclick="showPage('recent',this)">
+🕘 Recent Files
+</button>
+
+<button onclick="showPage('shared',this)">
+🤝 Shared Files
+</button>
+
+<button onclick="showPage('notifications',this)">
+🔔 Notifications
+</button>
+
+<button onclick="showPage('profile',this)">
+👤 Profile
+</button>
+
+<button onclick="showPage('admin',this)">
+⚙️ Admin
+</button>
+
+</aside>
+
+
+<main class="main">
+
+
+<!-- ================= DASHBOARD ================= -->
+
+<section id="dashboard" class="page">
+
+<div class="page-title">
+
+<h2>Cloud Dashboard</h2>
+
+<p>
+Manage your files securely from one place.
+</p>
+
+</div>
+
+
+<div class="stats">
+
+<div class="stat">
+<h4>Total Files</h4>
+<strong id="totalFiles">0</strong>
+</div>
+
+<div class="stat">
+<h4>Storage Used</h4>
+<strong id="storageUsed">0 MB</strong>
+</div>
+
+<div class="stat">
+<h4>Favorites</h4>
+<strong id="favoriteCount">0</strong>
+</div>
+
+<div class="stat">
+<h4>Shared Files</h4>
+<strong id="sharedCount">0</strong>
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h3>☁️ Cloud Storage</h3>
+
+<br>
+
+<div class="progress">
+
+<div id="storageBar"
+class="progress-bar">
+</div>
+
+</div>
+
+<br>
+
+<p id="storageText">
+0 MB of 1024 MB used
+</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>🕘 Recent Files</h3>
+
+<br>
+
+<div id="recentDashboard"
+class="file-grid">
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h3>✨ Modern Cloud Features</h3>
+
+<br>
+
+<p>🔐 Secure user authentication</p>
+<br>
+<p>☁️ Cloud-ready file architecture</p>
+<br>
+<p>🤝 File sharing</p>
+<br>
+<p>⭐ Favorite files</p>
+<br>
+<p>📊 Storage analytics</p>
+<br>
+<p>🔎 Smart file search</p>
+<br>
+<p>🌙 Dark mode</p>
+<br>
+<p>📋 Activity tracking</p>
+
+</div>
+
+</section>
+
+
+<!-- ================= FILES ================= -->
+
+<section id="files" class="page hidden">
+
+<div class="page-title">
+
+<h2>📁 My Files</h2>
+
+<p>Upload and manage your files.</p>
+
+</div>
+
+
+<div class="toolbar">
+
+<input
+id="fileSearch"
+placeholder="Search files..."
+oninput="renderFiles()">
+
+<select id="fileFilter"
+onchange="renderFiles()">
+
+<option value="All">
+All Files
+</option>
+
+<option value="Image">
+Images
+</option>
+
+<option value="Document">
+Documents
+</option>
+
+<option value="Video">
+Videos
+</option>
+
+<option value="Other">
+Other
+</option>
+
+</select>
+
+<button class="btn green"
+onclick="document.getElementById('fileInput').click()">
+⬆️ Upload File
+</button>
+
+<input
+id="fileInput"
+type="file"
+class="hidden"
+onchange="uploadFile(event)">
+
+</div>
+
+
+<div id="fileGrid"
+class="file-grid">
+</div>
+
+</section>
+
+
+<!-- ================= FAVORITES ================= -->
+
+<section id="favorites"
+class="page hidden">
+
+<div class="page-title">
+
+<h2>⭐ Favorite Files</h2>
+
+<p>Your important files.</p>
+
+</div>
+
+<div id="favoriteGrid"
+class="file-grid">
+</div>
+
+</section>
+
+
+<!-- ================= RECENT ================= -->
+
+<section id="recent"
+class="page hidden">
+
+<div class="page-title">
+
+<h2>🕘 Recent Files</h2>
+
+<p>Recently accessed files.</p>
+
+</div>
+
+<div id="recentGrid"
+class="file-grid">
+</div>
+
+</section>
+
+
+<!-- ================= SHARED ================= -->
+
+<section id="shared"
+class="page hidden">
+
+<div class="page-title">
+
+<h2>🤝 Shared Files</h2>
+
+<p>Files shared with other users.</p>
+
+</div>
+
+<div class="card">
+
+<div style="overflow-x:auto">
+
+<table>
+
+<thead>
+
+<tr>
+<th>File</th>
+<th>Owner</th>
+<th>Shared With</th>
+<th>Status</th>
+</tr>
+
+</thead>
+
+<tbody id="sharedTable">
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ================= NOTIFICATIONS ================= -->
+
+<section id="notifications"
+class="page hidden">
+
+<div class="page-title">
+
+<h2>🔔 Notifications</h2>
+
+</div>
+
+<div class="card">
+
+<div class="notification">
+☁️ Cloud storage system is online.
+</div>
+
+<div class="notification">
+🔐 Your files are protected by account authentication.
+</div>
+
+<div class="notification">
+📁 You can upload and manage your files.
+</div>
+
+<div class="notification">
+🤝 File sharing is available.
+</div>
+
+<div class="notification">
+💾 Remember to keep important files backed up.
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ================= PROFILE ================= -->
+
+<section id="profile"
+class="page hidden">
+
+<div class="page-title">
+
+<h2>👤 My Profile</h2>
+
+</div>
+
+<div class="card">
+
+<div class="profile">
+
+<div id="avatar"
+class="avatar">
+U
+</div>
+
+<div>
+
+<h2 id="profileName"></h2>
+
+<p id="profileEmail"></p>
+
+<br>
+
+<span>
+Cloud User
+</span>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h3>🔑 Change Password</h3>
+
+<br>
+
+<input
+id="newPassword"
+type="password"
+placeholder="New password"
+style="padding:11px;width:100%;max-width:400px;border:1px solid #ccc;border-radius:7px;">
+
+<br><br>
+
+<button
+class="btn"
+onclick="changePassword()">
+Update Password
+</button>
+
+</div>
+
+</section>
+
+
+<!-- ================= ADMIN ================= -->
+
+<section id="admin"
+class="page hidden">
+
+<div class="page-title">
+
+<h2>⚙️ Admin Dashboard</h2>
+
+<p>Cloud system administration.</p>
+
+</div>
+
+
+<div class="stats">
+
+<div class="stat">
+<h4>Registered Users</h4>
+<strong id="adminUsers">0</strong>
+</div>
+
+<div class="stat">
+<h4>Total Files</h4>
+<strong id="adminFiles">0</strong>
+</div>
+
+<div class="stat">
+<h4>Storage Used</h4>
+<strong id="adminStorage">0 MB</strong>
+</div>
+
+<div class="stat">
+<h4>System Status</h4>
+<strong>ONLINE</strong>
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h3>📋 Activity Log</h3>
+
+<br>
+
+<div id="activityLog"></div>
+
+</div>
+
+
+<div class="card">
+
+<button
+class="btn"
+onclick="exportReport()">
+📥 Export Cloud Report
+</button>
+
+</div>
+
+</section>
+
+</main>
+
+</div>
+
+</div>
+
+
+<!-- ================= MODAL ================= -->
+
+<div id="modal"
+class="modal hidden">
+
+<div class="modal-box">
+
+<button
+class="close"
+onclick="closeModal()">
+✕
+</button>
+
+<h2 id="modalTitle"></h2>
+
+<br>
+
+<p id="modalDetails"></p>
+
+<br>
+
+<button
+class="btn"
+onclick="downloadCurrentFile()">
+⬇️ Download
+</button>
+
+</div>
+
+</div>
+
+
+<script>
+
+/* =================================================
+   DATA
+================================================= */
+
+let users =
+JSON.parse(localStorage.getItem("cloudUsers")) || [
+
+{
+name:"Cloud Admin",
+email:"admin@cloudvault.com",
+password:"admin123"
+}
+
+];
+
+
+let files =
+JSON.parse(localStorage.getItem("cloudFiles")) || [
+
+{
+id:1,
+name:"Project Report.pdf",
+type:"Document",
+size:4.5,
+favorite:true,
+shared:true,
+owner:"Cloud Admin",
+lastAccess:Date.now()
+},
+
+{
+id:2,
+name:"Vacation Photo.jpg",
+type:"Image",
+size:2.8,
+favorite:false,
+shared:false,
+owner:"Cloud Admin",
+lastAccess:Date.now()-50000
+},
+
+{
+id:3,
+name:"Presentation.pptx",
+type:"Document",
+size:6.2,
+favorite:true,
+shared:false,
+owner:"Cloud Admin",
+lastAccess:Date.now()-100000
+},
+
+{
+id:4,
+name:"Demo Video.mp4",
+type:"Video",
+size:15.5,
+favorite:false,
+shared:true,
+owner:"Cloud Admin",
+lastAccess:Date.now()-150000
+}
+
+];
+
+
+let logs =
+JSON.parse(localStorage.getItem("cloudLogs")) || [];
+
+let currentUser =
+JSON.parse(localStorage.getItem("cloudCurrentUser")) || null;
+
+let currentFile = null;
+
+
+/* =================================================
+   AUTH
+================================================= */
+
+function showSignup(){
+
+document
+.getElementById("loginForm")
+.classList.add("hidden");
+
+document
+.getElementById("signupForm")
+.classList.remove("hidden");
+
+document
+.getElementById("authText")
+.innerText =
+"Create your CloudVault account";
+
+}
+
+
+function showLogin(){
+
+document
+.getElementById("signupForm")
+.classList.add("hidden");
+
+document
+.getElementById("loginForm")
+.classList.remove("hidden");
+
+document
+.getElementById("authText")
+.innerText =
+"Secure Cloud File Management";
+
+}
+
+
+function togglePassword(id){
+
+const input =
+document.getElementById(id);
+
+input.type =
+input.type === "password"
+? "text"
+: "password";
+
+}
+
+
+function signup(){
+
+const name =
+document
+.getElementById("signupName")
+.value.trim();
+
+const email =
+document
+.getElementById("signupEmail")
+.value.trim();
+
+const password =
+document
+.getElementById("signupPassword")
+.value;
+
+if(!name || !email || !password){
+
+alert("Please fill all fields.");
+
+return;
+
+}
+
+if(password.length < 6){
+
+alert(
+"Password must contain at least 6 characters."
+);
+
+return;
+
+}
+
+if(
+users.some(
+u=>u.email===email
+)
+){
+
+alert("Account already exists.");
+
+return;
+
+}
+
+users.push({
+name,
+email,
+password
+});
+
+save();
+
+alert(
+"Account created successfully!"
+);
+
+showLogin();
+
+}
+
+
+function login(){
+
+const email =
+document
+.getElementById("loginEmail")
+.value.trim();
+
+const password =
+document
+.getElementById("loginPassword")
+.value;
+
+const user =
+users.find(
+u=>
+u.email===email &&
+u.password===password
+);
+
+if(!user){
+
+alert(
+"Invalid email or password."
+);
+
+return;
+
+}
+
+currentUser=user;
+
+localStorage.setItem(
+"cloudCurrentUser",
+JSON.stringify(currentUser)
+);
+
+addLog(
+"Logged in successfully"
+);
+
+startApp();
+
+}
+
+
+function logout(){
+
+addLog(
+"Logged out"
+);
+
+localStorage.removeItem(
+"cloudCurrentUser"
+);
+
+currentUser=null;
+
+document
+.getElementById("app")
+.classList.add("hidden");
+
+document
+.getElementById("auth")
+.classList.remove("hidden");
+
+}
+
+
+/* =================================================
+   START APP
+================================================= */
+
+function startApp(){
+
+document
+.getElementById("auth")
+.classList.add("hidden");
+
+document
+.getElementById("app")
+.classList.remove("hidden");
+
+document
+.getElementById("welcomeUser")
+.innerText =
+"Hi, "+currentUser.name;
+
+renderAll();
+
+}
+
+
+/* =================================================
+   NAVIGATION
+================================================= */
+
+function showPage(page,button){
+
+document
+.querySelectorAll(".page")
+.forEach(
+p=>p.classList.add("hidden")
+);
+
+document
+.getElementById(page)
+.classList.remove("hidden");
+
+document
+.querySelectorAll(".sidebar button")
+.forEach(
+b=>b.classList.remove("active")
+);
+
+if(button){
+
+button.classList.add("active");
+
+}
+
+}
+
+
+/* =================================================
+   FILE TYPE
+================================================= */
+
+function getFileIcon(type){
+
+if(type==="Image") return "🖼️";
+
+if(type==="Document") return "📄";
+
+if(type==="Video") return "🎬";
+
+return "📁";
+
+}
+
+
+/* =================================================
+   FILE HTML
+================================================= */
+
+function fileHTML(file){
+
+return `
+
+<div class="file-card">
+
+<div class="file-icon">
+${getFileIcon(file.type)}
+</div>
+
+<h3>
+${file.name}
+</h3>
+
+<p>
+${file.type}
+</p>
+
+<p>
+${file.size} MB
+</p>
+
+<p>
+${file.shared ? "🤝 Shared" : "🔒 Private"}
+</p>
+
+<div class="file-actions">
+
+<button
+class="small-btn"
+onclick="viewFile(${file.id})">
+View
+</button>
+
+<button
+class="small-btn"
+onclick="toggleFavorite(${file.id})">
+${file.favorite ? "⭐" : "☆"}
+</button>
+
+<button
+class="small-btn"
+onclick="renameFile(${file.id})">
+Rename
+</button>
+
+<button
+class="small-btn green"
+onclick="shareFile(${file.id})">
+Share
+</button>
+
+<button
+class="small-btn red"
+onclick="deleteFile(${file.id})">
+Delete
+</button>
+
+</div>
+
+</div>
+
+`;
+
+}
+
+
+/* =================================================
+   RENDER FILES
+================================================= */
+
+function renderFiles(){
+
+const search =
+document
+.getElementById("fileSearch")
+?.value
+.toLowerCase() || "";
+
+const filter =
+document
+.getElementById("fileFilter")
+?.value || "All";
+
+const filtered =
+files.filter(file=>{
+
+const matchSearch =
+file.name
+.toLowerCase()
+.includes(search);
+
+const matchFilter =
+filter==="All" ||
+file.type===filter;
+
+return matchSearch && matchFilter;
+
+});
+
+document
+.getElementById("fileGrid")
+.innerHTML =
+filtered
+.map(fileHTML)
+.join("");
+
+}
+
+
+/* =================================================
+   UPLOAD
+================================================= */
+
+function uploadFile(event){
+
+const file =
+event.target.files[0];
+
+if(!file) return;
+
+const size =
+file.size / (1024*1024);
+
+let type="Other";
+
+if(
+file.type.startsWith("image/")
+){
+
+type="Image";
+
+}
+else if(
+file.type.startsWith("video/")
+){
+
+type="Video";
+
+}
+else if(
+file.type.includes("pdf") ||
+file.type.includes("document") ||
+file.type.includes("text") ||
+file.name.endsWith(".docx") ||
+file.name.endsWith(".pptx")
+){
+
+type="Document";
+
+}
+
+const newFile={
+
+id:Date.now(),
+
+name:file.name,
+
+type:type,
+
+size:Number(
+size.toFixed(2)
+),
+
+favorite:false,
+
+shared:false,
+
+owner:currentUser.name,
+
+lastAccess:Date.now()
+
+};
+
+files.push(newFile);
+
+addLog(
+"Uploaded file: "+
+file.name
+);
+
+save();
+
+renderAll();
+
+alert(
+"File uploaded successfully!"
+);
+
+event.target.value="";
+
+}
+
+
+/* =================================================
+   VIEW
+================================================= */
+
+function viewFile(id){
+
+const file =
+files.find(
+f=>f.id===id
+);
+
+if(!file) return;
+
+currentFile=file;
+
+file.lastAccess=Date.now();
+
+addLog(
+"Opened file: "+
+file.name
+);
+
+save();
+
+document
+.getElementById("modalTitle")
+.innerText =
+"📁 "+file.name;
+
+document
+.getElementById("modalDetails")
+.innerText =
+"Type: "+file.type+
+" | Size: "+file.size+
+" MB | Owner: "+file.owner;
+
+document
+.getElementById("modal")
+.classList.remove("hidden");
+
+renderAll();
+
+}
+
+
+function closeModal(){
+
+document
+.getElementById("modal")
+.classList.add("hidden");
+
+}
+
+
+function downloadCurrentFile(){
+
+if(!currentFile) return;
+
+const content =
+`CloudVault File
+
+File Name: ${currentFile.name}
+Type: ${currentFile.type}
+Size: ${currentFile.size} MB
+Owner: ${currentFile.owner}
+`;
+
+const blob =
+new Blob(
+[content],
+{type:"text/plain"}
+);
+
+const url =
+URL.createObjectURL(blob);
+
+const a =
+document.createElement("a");
+
+a.href=url;
+
+a.download=
+currentFile.name+".txt";
+
+a.click();
+
+URL.revokeObjectURL(url);
+
+addLog(
+"Downloaded file: "+
+currentFile.name
+);
+
+}
+
+
+/* =================================================
+   RENAME
+================================================= */
+
+function renameFile(id){
+
+const file =
+files.find(
+f=>f.id===id
+);
+
+const newName =
+prompt(
+"Enter new file name:",
+file.name
+);
+
+if(!newName) return;
+
+file.name=newName;
+
+addLog(
+"Renamed file to: "+
+newName
+);
+
+save();
+
+renderAll();
+
+}
+
+
+/* =================================================
+   DELETE
+================================================= */
+
+function deleteFile(id){
+
+const file =
+files.find(
+f=>f.id===id
+);
+
+if(!file) return;
+
+if(
+!confirm(
+"Delete "+file.name+"?"
+)
+){
+
+return;
+
+}
+
+files =
+files.filter(
+f=>f.id!==id
+);
+
+addLog(
+"Deleted file: "+
+file.name
+);
+
+save();
+
+renderAll();
+
+}
+
+
+/* =================================================
+   FAVORITE
+================================================= */
+
+function toggleFavorite(id){
+
+const file =
+files.find(
+f=>f.id===id
+);
+
+if(!file) return;
+
+file.favorite=
+!file.favorite;
+
+addLog(
+file.favorite
+? "Added to favorites: "+file.name
+: "Removed from favorites: "+file.name
+);
+
+save();
+
+renderAll();
+
+}
+
+
+/* =================================================
+   SHARE
+================================================= */
+
+function shareFile(id){
+
+const file =
+files.find(
+f=>f.id===id
+);
+
+if(!file) return;
+
+const email =
+prompt(
+"Enter email to share this file:"
+);
+
+if(!email) return;
+
+file.shared=true;
+
+addLog(
+"Shared "+file.name+
+" with "+email
+);
+
+save();
+
+renderAll();
+
+alert(
+"File shared successfully!"
+);
+
+}
+
+
+/* =================================================
+   FAVORITES
+================================================= */
+
+function renderFavorites(){
+
+const favoriteFiles =
+files.filter(
+f=>f.favorite
+);
+
+const box =
+document.getElementById(
+"favoriteGrid"
+);
+
+if(!favoriteFiles.length){
+
+box.innerHTML=
+"<p>No favorite files yet.</p>";
+
+return;
+
+}
+
+box.innerHTML =
+favoriteFiles
+.map(fileHTML)
+.join("");
+
+}
+
+
+/* =================================================
+   RECENT
+================================================= */
+
+function renderRecent(){
+
+const recent =
+files
+.slice()
+.sort(
+(a,b)=>
+b.lastAccess-a.lastAccess
+)
+.slice(0,6);
+
+document
+.getElementById("recentGrid")
+.innerHTML =
+recent
+.map(fileHTML)
+.join("");
+
+document
+.getElementById("recentDashboard")
+.innerHTML =
+recent
+.slice(0,4)
+.map(fileHTML)
+.join("");
+
+}
+
+
+/* =================================================
+   SHARED
+================================================= */
+
+function renderShared(){
+
+const shared =
+files.filter(
+f=>f.shared
+);
+
+document
+.getElementById("sharedTable")
+.innerHTML =
+shared
+.map(
+f=>`
+
+<tr>
+
+<td>
+${f.name}
+</td>
+
+<td>
+${f.owner}
+</td>
+
+<td>
+Shared User
+</td>
+
+<td>
+<span
+style="
+color:#16a34a;
+font-weight:bold;">
+Active
+</span>
+</td>
+
+</tr>
+
+`
+)
+.join("");
+
+}
+
+
+/* =================================================
+   DASHBOARD
+================================================= */
+
+function renderDashboard(){
+
+const totalSize =
+files.reduce(
+(sum,f)=>
+sum+Number(f.size),
+0
+);
+
+document
+.getElementById("totalFiles")
+.innerText =
+files.length;
+
+document
+.getElementById("storageUsed")
+.innerText =
+totalSize.toFixed(2)+" MB";
+
+document
+.getElementById("favoriteCount")
+.innerText =
+files.filter(
+f=>f.favorite
+).length;
+
+document
+.getElementById("sharedCount")
+.innerText =
+files.filter(
+f=>f.shared
+).length;
+
+const percent =
+Math.min(
+(totalSize/1024)*100,
+100
+);
+
+document
+.getElementById("storageBar")
+.style.width =
+percent+"%";
+
+document
+.getElementById("storageText")
+.innerText =
+totalSize.toFixed(2)+
+" MB of 1024 MB used";
+
+}
+
+
+/* =================================================
+   PROFILE
+================================================= */
+
+function renderProfile(){
+
+document
+.getElementById("profileName")
+.innerText =
+currentUser.name;
+
+document
+.getElementById("profileEmail")
+.innerText =
+currentUser.email;
+
+document
+.getElementById("avatar")
+.innerText =
+currentUser.name
+.charAt(0)
+.toUpperCase();
+
+}
+
+
+function changePassword(){
+
+const password =
+document
+.getElementById("newPassword")
+.value;
+
+if(password.length<6){
+
+alert(
+"Password must contain at least 6 characters."
+);
+
+return;
+
+}
+
+const user =
+users.find(
+u=>u.email===currentUser.email
+);
+
+user.password=password;
+
+currentUser.password=password;
+
+localStorage.setItem(
+"cloudCurrentUser",
+JSON.stringify(currentUser)
+);
+
+save();
+
+addLog(
+"Password changed"
+);
+
+alert(
+"Password changed successfully!"
+);
+
+}
+
+
+/* =================================================
+   ADMIN
+================================================= */
+
+function renderAdmin(){
+
+const totalSize =
+files.reduce(
+(sum,f)=>
+sum+Number(f.size),
+0
+);
+
+document
+.getElementById("adminUsers")
+.innerText =
+users.length;
+
+document
+.getElementById("adminFiles")
+.innerText =
+files.length;
+
+document
+.getElementById("adminStorage")
+.innerText =
+totalSize.toFixed(2)+" MB";
+
+document
+.getElementById("activityLog")
+.innerHTML =
+logs
+.slice()
+.reverse()
+.slice(0,15)
+.map(
+l=>`
+
+<div class="notification">
+
+📋 ${l.message}
+
+<br>
+
+<small>
+${l.time}
+</small>
+
+</div>
+
+`
+)
+.join("");
+
+}
+
+
+/* =================================================
+   LOGS
+================================================= */
+
+function addLog(message){
+
+logs.push({
+
+message:message,
+
+time:
+new Date()
+.toLocaleString()
+
+});
+
+save();
+
+}
+
+
+/* =================================================
+   EXPORT
+================================================= */
+
+function exportReport(){
+
+let report=
+"CLOUDVAULT STORAGE REPORT\n";
+
+report+=
+"========================\n\n";
+
+report+=
+"Generated: "+
+new Date()
+.toLocaleString()+
+"\n\n";
+
+report+=
+"Total Files: "+
+files.length+
+"\n";
+
+report+=
+"Favorites: "+
+files.filter(
+f=>f.favorite
+).length+
+"\n";
+
+report+=
+"Shared Files: "+
+files.filter(
+f=>f.shared
+).length+
+"\n\n";
+
+files.forEach(
+f=>{
+
+report+=
+`File: ${f.name}\n`;
+
+report+=
+`Type: ${f.type}\n`;
+
+report+=
+`Size: ${f.size} MB\n`;
+
+report+=
+`Owner: ${f.owner}\n`;
+
+report+=
+`Shared: ${f.shared}\n\n`;
+
+}
+);
+
+const blob =
+new Blob(
+[report],
+{type:"text/plain"}
+);
+
+const url =
+URL.createObjectURL(blob);
+
+const a =
+document.createElement("a");
+
+a.href=url;
+
+a.download=
+"cloud-storage-report.txt";
+
+a.click();
+
+URL.revokeObjectURL(url);
+
+}
+
+
+/* =================================================
+   DARK MODE
+================================================= */
+
+function toggleDark(){
+
+document
+.body
+.classList
+.toggle("dark");
+
+localStorage.setItem(
+"cloudDark",
+document.body.classList.contains("dark")
+);
+
+}
+
+
+/* =================================================
+   SAVE
+================================================= */
+
+function save(){
+
+localStorage.setItem(
+"cloudUsers",
+JSON.stringify(users)
+);
+
+localStorage.setItem(
+"cloudFiles",
+JSON.stringify(files)
+);
+
+localStorage.setItem(
+"cloudLogs",
+JSON.stringify(logs)
+);
+
+}
+
+
+/* =================================================
+   RENDER ALL
+================================================= */
+
+function renderAll(){
+
+renderDashboard();
+
+renderFiles();
+
+renderFavorites();
+
+renderRecent();
+
+renderShared();
+
+renderProfile();
+
+renderAdmin();
+
+}
+
+
+/* =================================================
+   STARTUP
+================================================= */
+
+if(
+localStorage.getItem("cloudDark")
+==="true"
+){
+
+document
+.body
+.classList
+.add("dark");
+
+}
+
+if(currentUser){
+
+startApp();
+
+}
+
+</script>
+
+</body>
+</html>
